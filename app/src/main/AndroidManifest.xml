@@ -17,6 +17,18 @@
             android:enabled="true"
             android:exported="true"/>
 
+        <service
+            android:name=".service.WechatService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/wechat_accessibility"/>
+        </service>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,5 +37,6 @@
             </intent-filter>
         </activity>
     </application>
+
 
 </manifest>
