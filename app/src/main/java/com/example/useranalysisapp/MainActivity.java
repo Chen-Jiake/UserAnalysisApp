@@ -2,21 +2,24 @@ package com.example.useranalysisapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.RemoteViews;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.useranalysisapp.receiver.SmsReceiver;
+import com.example.useranalysisapp.service.ScreenshotService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     SmsReceiver receiver;
+
+    private static final int REQUEST_MEDIA_PROJECTION = 48;
+    MediaProjectionManager mediaProjectionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver,filter);//注册广播接收器
 
         openAccessibilityService();
+
+        Button startbtn = findViewById(R.id.start_service);
+        Button stopbtn = findViewById(R.id.stop_service);
+        stopbtn.setOnClickListener(this);
+        startbtn.setOnClickListener(this);
     }
 
     @Override
@@ -51,4 +59,40 @@ public class MainActivity extends AppCompatActivity {
             startActivity(startListenIntent);
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.start_service:{
+                requestCapturePermission();
+                break;
+            }
+            case R.id.stop_service:{
+                Intent intent = new Intent(this, ScreenshotService.class);
+                stopService(intent);
+                break;
+            }
+        }
+    }
+
+    //初始化MediaProjectionManager，请求权限
+    public void requestCapturePermission() {
+        mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
+    }
+
+    //申请权限的activiry的返回信息处理
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_MEDIA_PROJECTION:
+                if (resultCode == RESULT_OK && data != null) {
+                    ScreenshotService.setResultData(data);
+                    startService(new Intent(this, ScreenshotService.class));
+                }
+                break;
+        }
+    }
+
 }

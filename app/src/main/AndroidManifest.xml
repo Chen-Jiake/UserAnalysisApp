@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.useranalysisapp">
 
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -12,21 +12,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <receiver
             android:name=".receiver.SmsReceiver"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="false" />
+
+        <service
+            android:name=".service.ScreenshotService"
+            android:enabled="true"
+            android:exported="false"/>
 
         <service
             android:name=".service.WechatService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/wechat_accessibility"/>
+                android:resource="@xml/wechat_accessibility" />
         </service>
 
         <activity android:name=".MainActivity">
@@ -37,6 +43,5 @@
             </intent-filter>
         </activity>
     </application>
-
 
 </manifest>
