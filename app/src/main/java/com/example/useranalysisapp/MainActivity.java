@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.useranalysisapp.receiver.SmsReceiver;
+import com.example.useranalysisapp.service.MobileQQService;
 import com.example.useranalysisapp.service.ScreenshotService;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         registerReceiver(receiver,filter);//注册广播接收器
 
         openAccessibilityService();
+
+        openMobileQQService();
 
         Button startbtn = findViewById(R.id.start_service);
         Button stopbtn = findViewById(R.id.stop_service);
@@ -58,6 +62,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent startListenIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivity(startListenIntent);
         }
+    }
+
+    // 开启MobileQQService
+    private void openMobileQQService(){
+        Intent startMobileQQServiceIntent = new Intent(this, MobileQQService.class);
+        startService(startMobileQQServiceIntent);
     }
 
     @Override

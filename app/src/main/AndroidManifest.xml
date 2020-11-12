@@ -12,6 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".service.MobileQQService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/mobileqq_accessibility" />
+        </service>
 
         <receiver
             android:name=".receiver.SmsReceiver"
@@ -21,8 +34,7 @@
         <service
             android:name=".service.ScreenshotService"
             android:enabled="true"
-            android:exported="false"/>
-
+            android:exported="false" />
         <service
             android:name=".service.WechatService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
