@@ -58,7 +58,7 @@ public class ScreenUtils {
         return statusHeight;
     }
 
-
+    //test
     public static Bitmap snapShotWithStatusBar(Activity activity)
     {
         View view = activity.getWindow().getDecorView();
