@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.useranalysisapp.receiver.SmsReceiver;
 import com.example.useranalysisapp.service.MobileQQService;
 import com.example.useranalysisapp.service.ScreenshotService;
+import com.example.useranalysisapp.utils.SendUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button stopbtn = findViewById(R.id.stop_service);
         stopbtn.setOnClickListener(this);
         startbtn.setOnClickListener(this);
+        //设置发送图片前,图片在手机上的暂存路径
+        String path = getExternalFilesDir(null).getAbsolutePath();
+        SendUtils.setPath(path);
     }
 
     @Override

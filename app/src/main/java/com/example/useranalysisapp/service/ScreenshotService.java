@@ -21,6 +21,7 @@ import android.util.Log;
 
 import com.example.useranalysisapp.utils.AsyncTaskCompat;
 import com.example.useranalysisapp.utils.ScreenUtils;
+import com.example.useranalysisapp.utils.SendUtils;
 
 import java.nio.ByteBuffer;
 import java.util.Timer;
@@ -37,6 +38,8 @@ public class ScreenshotService extends Service {
     public static Intent mResultData;
     public VirtualDisplay mVirtualDisplay;
     private MediaProjectionManager mMediaProjectionManager;
+    private int numofShot=0;
+
     private Timer timer = new Timer();
     final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -82,8 +85,11 @@ public class ScreenshotService extends Service {
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
+                //暂时截四张图，用于测试，之后可删除
+                numofShot+=1;
+                if (numofShot>3) timer.cancel();
             }
-        }, 2000, 3000);
+        }, 3000, 8000);
     }
 
     //截图的准备和实际过程
@@ -175,14 +181,11 @@ public class ScreenshotService extends Service {
         @Override
         protected void onPostExecute(final Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            /**处理bitmap的业务代码待写**/
-            changeImage(bitmap);
+            /**发送图片到服务端**/
+            SendUtils.send(bitmap,numofShot);
         }
     }
 
-    private void changeImage(Bitmap bitmap) {
-        Log.e("here","****************success*************");
-    }
 
     //关闭VisualDisplay
     private void stopVirtual() {
