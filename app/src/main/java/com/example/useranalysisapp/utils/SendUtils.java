@@ -1,7 +1,12 @@
 package com.example.useranalysisapp.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,14 +19,22 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class SendUtils {
 
-    private static String Url="http://10.0.2.2:8080/upload/uploadFile";//上传文件操作的服务器地址
+    private static String IP="http://10.108.20.192:8001";
+    private static String imageUrl = IP + "/data/image";
+    private static String messageUrl = IP + "/data/message";
     private static String path;
     //bitmap转为file并发送，文件名为id
-    public static void send(Bitmap bitmap,int id){
+    public static void sendImage(Bitmap bitmap, int id){
+
+        Matrix matrix = new Matrix();
+        matrix.setScale(0.25f, 0.25f);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
         //存文件
         File file=null;
         String filename=id+".png";//图片存为png格式
@@ -39,7 +52,7 @@ public class SendUtils {
         FutureTask<Boolean> task =new FutureTask<>(()->{
             try {
                 ResponseBody responseBody =okhttp.newCall(
-                        new Request.Builder().post(body).url(Url).build()
+                        new Request.Builder().post(body).url(imageUrl).build()
                 ).execute().body();
                 if (responseBody!=null) return true;
                 return false;
@@ -103,4 +116,34 @@ public class SendUtils {
     {
         throw new UnsupportedOperationException("cannot be instantiated");
     }
+
+    public static void sendMessage(String content, Long time, String app){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("content",content);
+                    obj.put("time",time);
+                    obj.put("app", app);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                MediaType type = MediaType.parse("application/json;charset=utf-8");
+                RequestBody requestBody = RequestBody.create(type, obj.toString());
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder()
+                            // 指定访问的服务器地址
+                            .url(messageUrl).post(requestBody)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
 }

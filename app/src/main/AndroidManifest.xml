@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".service.MobileQQService"
+            android:name=".service.MessageService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -37,7 +37,7 @@
 
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/mobileqq_accessibility" />
+                android:resource="@xml/message_accessibility" />
         </service>
 
         <receiver
@@ -49,18 +49,6 @@
             android:name=".service.ScreenshotService"
             android:enabled="true"
             android:exported="true" />
-        <service
-            android:name=".service.WechatService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/wechat_accessibility" />
-        </service>
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -23,6 +23,10 @@ import com.example.useranalysisapp.utils.AsyncTaskCompat;
 import com.example.useranalysisapp.utils.ScreenUtils;
 import com.example.useranalysisapp.utils.SendUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -181,11 +185,25 @@ public class ScreenshotService extends Service {
         @Override
         protected void onPostExecute(final Bitmap bitmap) {
             super.onPostExecute(bitmap);
+            //saveBitmap(bitmap, numofShot);
             /**发送图片到服务端**/
-            SendUtils.send(bitmap,numofShot);
+            SendUtils.sendImage(bitmap,numofShot);
         }
     }
 
+    private void saveBitmap(Bitmap bitmap, int numofShot){
+        String path = this.getExternalFilesDir("image").getAbsolutePath();
+        File newFile = new File(path + File.separator + "image" + numofShot + ".jpg");
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(newFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     //关闭VisualDisplay
     private void stopVirtual() {
