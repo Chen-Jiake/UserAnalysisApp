@@ -29,7 +29,7 @@ public class SendUtils {
     private static String messageUrl = IP + "/data/message";
     private static String path;
     //bitmap转为file并发送，文件名为id
-    public static void sendImage(Bitmap bitmap, int id){
+    public static void sendImage(Bitmap bitmap, long id){
 
         Matrix matrix = new Matrix();
         matrix.setScale(0.25f, 0.25f);

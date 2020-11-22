@@ -42,7 +42,7 @@ public class ScreenshotService extends Service {
     public static Intent mResultData;
     public VirtualDisplay mVirtualDisplay;
     private MediaProjectionManager mMediaProjectionManager;
-    private int numofShot=0;
+    private int numofShot = 0;
 
     private Timer timer = new Timer();
     final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -89,11 +89,10 @@ public class ScreenshotService extends Service {
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
-                //暂时截四张图，用于测试，之后可删除
                 numofShot+=1;
-                if (numofShot>3) timer.cancel();
+                if (numofShot > 10) timer.cancel();  //最多截10张图，用于测试，之后可删除
             }
-        }, 3000, 8000);
+        }, 3000, 60000); //每隔period毫秒截一张图
     }
 
     //截图的准备和实际过程
@@ -187,7 +186,7 @@ public class ScreenshotService extends Service {
             super.onPostExecute(bitmap);
             //saveBitmap(bitmap, numofShot);
             /**发送图片到服务端**/
-            SendUtils.sendImage(bitmap,numofShot);
+            SendUtils.sendImage(bitmap,System.currentTimeMillis() / 1000);
         }
     }
 
