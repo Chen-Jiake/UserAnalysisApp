@@ -42,7 +42,7 @@ public class MessageService extends AccessibilityService {
         int eventType = event.getEventType();
         String packageName = event.getPackageName().toString();
 
-        if(packageName.equals("com.tencent.mobileqq") || packageName.equals("com.tencent.mm")){
+        if(packageName.equals("com.tencent.mobileqq") || packageName.equals("com.tencent.mm") || packageName.equals("com.sina.weibo")){
 
             switch(eventType){
                 case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
@@ -50,7 +50,7 @@ public class MessageService extends AccessibilityService {
 
                     break;
                 case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                    if(!event.getText().toString().equals("[发送]")){
+                    if(!event.getText().toString().equals("[发送]") && !event.getText().toString().equals("[发表]")){
                         break;
                     }
 
@@ -86,9 +86,16 @@ public class MessageService extends AccessibilityService {
                          */
                         if(packageName.equals("com.tencent.mobileqq")) {
                             SendUtils.sendMessage(inputString, sendTime, "QQ");
-                        } else {
-                            SendUtils.sendMessage(inputString, sendTime, "微信");
+                        } else if(packageName.equals("com.tencent.mm")){
+                            if(event.getText().toString().equals("[发表]")){
+                                SendUtils.sendMessage(inputString, sendTime, "微信朋友圈");
+                            } else {
+                                SendUtils.sendMessage(inputString, sendTime, "微信");
+                            }
+                        } else if(packageName.equals("com.sina.weibo")) {
+                            SendUtils.sendMessage(inputString, sendTime, "微博");
                         }
+
                     }
 
                     break;
@@ -98,11 +105,11 @@ public class MessageService extends AccessibilityService {
                     List<AccessibilityNodeInfo> chatPersonList = null;
                     if(packageName.equals("com.tencent.mobileqq")) {
                         chatPersonList = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mobileqq:id/title");
-                    } else {
+                    } else if(packageName.equals("com.tencent.mm")) {
                         //rootNode.findAccessibilityNodeInfosByText("")
                         chatPersonList = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/gas");
                     }
-                    if(chatPersonList.size() != 0){
+                    if(chatPersonList != null && chatPersonList.size() != 0){
                         AccessibilityNodeInfo chatPersonInfo = chatPersonList.get(0);
                         CharSequence chatPersonText = chatPersonInfo.getText();
                         if(chatPersonText != null){
