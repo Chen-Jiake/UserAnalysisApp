@@ -2,7 +2,9 @@ package com.example.useranalysisapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
@@ -24,9 +26,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText edUsername;
     private EditText edPassword;
-    private TextView tvLose;
-    private TextView tvNew;
-    private Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +36,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.tv_lose).setOnClickListener(this);
         findViewById(R.id.tv_new).setOnClickListener(this);
         findViewById(R.id.btn_login).setOnClickListener(this);
-
+        SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", null);
+        if(username != null) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
@@ -56,6 +61,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     SendUtils.login(username, password, new ResultListener<Void>() {
                         @Override
                         public void onSuccess(String message, Void data) {
+                            SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("username", username);
+                            editor.apply();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
