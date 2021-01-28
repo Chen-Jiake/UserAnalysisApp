@@ -14,6 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.FutureTask;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -24,10 +27,19 @@ import okhttp3.ResponseBody;
 
 public class SendUtils {
 
-    private static String IP="http://10.108.20.192:8001";
-    private static String imageUrl = IP + "/data/image";
-    private static String messageUrl = IP + "/data/message";
+    private static String IP = "http://192.168.1.68:";
+    //private static String IP="http://10.108.20.192:";
+    private static String DATA_SERVICE_PORT = "8001";
+    private static String imageUrl = IP + DATA_SERVICE_PORT + "/data/image";
+    private static String messageUrl = IP + DATA_SERVICE_PORT + "/data/message";
+
+    private static String USER_SERVICE_PORT = "8002";
+    private static String registerUrl = IP + USER_SERVICE_PORT + "/user/addUser";
+    private static String loginUrl = IP + USER_SERVICE_PORT + "/user/login";
+
     private static String path;
+
+    private static int RESULT_SUCCESS = 201;
     //bitmap转为file并发送，文件名为id
     public static void sendImage(Bitmap bitmap, long id){
 
@@ -139,6 +151,7 @@ public class SendUtils {
                             .url(messageUrl).post(requestBody)
                             .build();
                     Response response = client.newCall(request).execute();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,4 +159,85 @@ public class SendUtils {
         }).start();
     }
 
+    public static void register(String username, String password, ResultListener<Void> resultListener){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("username", username);
+            obj.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MediaType type = MediaType.parse("application/json;charset=utf-8");
+        RequestBody requestBody = RequestBody.create(type, obj.toString());
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                // 指定访问的服务器地址
+                .url(registerUrl).post(requestBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject result = new JSONObject(response.body().string());
+                    int httpCode = result.getInt("httpCode");
+                    if (httpCode == RESULT_SUCCESS) {
+                        resultListener.onSuccess(result.getString("message"), null);
+                    } else {
+                        resultListener.onFailure(result.getString("message"), null);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public static void login(String username, String password, ResultListener<Void> resultListener){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("username", username);
+            obj.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MediaType type = MediaType.parse("application/json;charset=utf-8");
+        RequestBody requestBody = RequestBody.create(type, obj.toString());
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                // 指定访问的服务器地址
+                .url(loginUrl).post(requestBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+             @Override
+             public void onFailure(Call call, IOException e) {
+
+             }
+
+             @Override
+             public void onResponse(Call call, Response response) throws IOException {
+                 try {
+                     JSONObject result = new JSONObject(response.body().string());
+                     int httpCode = result.getInt("httpCode");
+                     if (httpCode == RESULT_SUCCESS) {
+                         resultListener.onSuccess(result.getString("message"), null);
+                     } else {
+                         resultListener.onFailure(result.getString("message"), null);
+                     }
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
+             }
+        });
+
+    }
 }
