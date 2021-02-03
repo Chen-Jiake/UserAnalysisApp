@@ -12,8 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.useranalysisapp.activity.BindingActivity;
 import com.example.useranalysisapp.receiver.SmsReceiver;
-import com.example.useranalysisapp.service.MessageService;
 import com.example.useranalysisapp.service.ScreenshotService;
 import com.example.useranalysisapp.utils.SendUtils;
 
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button stopbtn = findViewById(R.id.stop_service);
         stopbtn.setOnClickListener(this);
         startbtn.setOnClickListener(this);
+        findViewById(R.id.binding).setOnClickListener(this);
         //设置发送图片前,图片在手机上的暂存路径
         String path = getExternalFilesDir(null).getAbsolutePath();
         SendUtils.setPath(path);
@@ -73,10 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.start_service:{
                 requestCapturePermission();
                 break;
-            }
-            case R.id.stop_service:{
+            } case R.id.stop_service:{
                 Intent intent = new Intent(this, ScreenshotService.class);
                 stopService(intent);
+                break;
+            } case R.id.binding:{
+                Intent intent = new Intent(this, BindingActivity.class);
+                startActivity(intent);
                 break;
             }
         }

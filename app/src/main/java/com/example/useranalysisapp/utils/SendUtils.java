@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 
+import com.example.useranalysisapp.model.LoginUser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +29,7 @@ import okhttp3.ResponseBody;
 
 public class SendUtils {
 
-    private static String IP = "http://192.168.1.68:";
+    private static String IP = "http://192.168.0.105:";
     //private static String IP="http://10.108.20.192:";
     private static String DATA_SERVICE_PORT = "8001";
     private static String imageUrl = IP + DATA_SERVICE_PORT + "/data/image";
@@ -36,6 +38,7 @@ public class SendUtils {
     private static String USER_SERVICE_PORT = "8002";
     private static String registerUrl = IP + USER_SERVICE_PORT + "/user/addUser";
     private static String loginUrl = IP + USER_SERVICE_PORT + "/user/login";
+    private static String bindUrl = IP + USER_SERVICE_PORT + "/user/bind";
 
     private static String path;
 
@@ -237,6 +240,53 @@ public class SendUtils {
                      e.printStackTrace();
                  }
              }
+        });
+
+    }
+
+    public static void bind(String username, String password, ResultListener<Void> resultListener){
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject user = new JSONObject();
+            user.put("username", LoginUser.getLoginUser().getUser().getUsername());
+            user.put("password", LoginUser.getLoginUser().getUser().getPassword());
+            obj.put("user", user);
+            JSONObject bindingUser = new JSONObject();
+            bindingUser.put("username", username);
+            bindingUser.put("password", password);
+            obj.put("bindingUser", bindingUser);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MediaType type = MediaType.parse("application/json;charset=utf-8");
+        RequestBody requestBody = RequestBody.create(type, obj.toString());
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                // 指定访问的服务器地址
+                .url(bindUrl).post(requestBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject result = new JSONObject(response.body().string());
+                    int httpCode = result.getInt("httpCode");
+                    if (httpCode == RESULT_SUCCESS) {
+                        resultListener.onSuccess(result.getString("message"), null);
+                    } else {
+                        resultListener.onFailure(result.getString("message"), null);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         });
 
     }

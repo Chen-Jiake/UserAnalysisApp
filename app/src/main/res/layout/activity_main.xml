@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.298"
-        tools:srcCompat="@tools:sample/avatars" />
-
     <Button
         android:id="@+id/start_service"
         android:layout_width="wrap_content"
@@ -27,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.405" />
 
     <Button
@@ -40,4 +28,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/start_service"
         app:layout_constraintVertical_bias="0.217" />
+
+    <Button
+        android:id="@+id/binding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="绑定"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/stop_service"
+        app:layout_constraintVertical_bias="0.217" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -28,7 +28,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.RegisterActivity"></activity>
+        <activity android:name=".activity.BindingActivity"></activity>
+        <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,7 +62,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

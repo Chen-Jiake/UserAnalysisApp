@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.useranalysisapp.MainActivity;
 import com.example.useranalysisapp.R;
+import com.example.useranalysisapp.model.LoginUser;
 import com.example.useranalysisapp.model.User;
 import com.example.useranalysisapp.utils.ResultListener;
 import com.example.useranalysisapp.utils.SendUtils;
@@ -38,10 +39,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.btn_login).setOnClickListener(this);
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", null);
+        String password = sharedPreferences.getString("password", null);
+        LoginUser.getLoginUser().setUser(new User(username, password));
         if(username != null) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
+
         }
     }
 
@@ -64,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("username", username);
+                            editor.putString("password", password);
                             editor.apply();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
