@@ -1,6 +1,8 @@
 package com.example.useranalysisapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +14,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.ashokvarma.bottomnavigation.BottomNavigationBar;
+import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.useranalysisapp.activity.BindingActivity;
+import com.example.useranalysisapp.fragment.FragmentHome;
+import com.example.useranalysisapp.fragment.FragmentMine;
 import com.example.useranalysisapp.receiver.SmsReceiver;
 import com.example.useranalysisapp.service.ScreenshotService;
 import com.example.useranalysisapp.utils.SendUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import Adapter.ViewPagerAdapter;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private BottomNavigationBar bottomNavigationBar;
+    private ViewPager2 viewPager;
 
     SmsReceiver receiver;
 
@@ -36,14 +50,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         openAccessibilityService();
 
-        Button startbtn = findViewById(R.id.start_service);
-        Button stopbtn = findViewById(R.id.stop_service);
-        stopbtn.setOnClickListener(this);
-        startbtn.setOnClickListener(this);
-        findViewById(R.id.binding).setOnClickListener(this);
+        //findViewById(R.id.start_service).setOnClickListener(this);
+        //findViewById(R.id.stop_service).setOnClickListener(this);
+        bottomNavigationBar = findViewById(R.id.bottom_navigation_bar_container);
+        viewPager = findViewById(R.id.viewpager);
         //设置发送图片前,图片在手机上的暂存路径
         String path = getExternalFilesDir(null).getAbsolutePath();
         SendUtils.setPath(path);
+
+        initBottomNavigationBar();
+        initViewPager();
     }
 
     @Override
@@ -78,10 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this, ScreenshotService.class);
                 stopService(intent);
                 break;
-            } case R.id.binding:{
-                Intent intent = new Intent(this, BindingActivity.class);
-                startActivity(intent);
-                break;
             }
         }
     }
@@ -104,6 +116,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
         }
+    }
+
+    private void initBottomNavigationBar() {
+        bottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                viewPager.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        });
+        bottomNavigationBar.clearAll();
+        bottomNavigationBar.setMode(BottomNavigationBar.MODE_FIXED); //自适应大小
+        bottomNavigationBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_DEFAULT);
+        bottomNavigationBar.setBarBackgroundColor(R.color.bg_gray)
+                .setActiveColor(R.color.theme)
+                .setInActiveColor(R.color.black);
+        bottomNavigationBar.addItem(new BottomNavigationItem(R.drawable.homepage_fill,"首页").setInactiveIconResource(R.drawable.homepage))
+                .addItem(new BottomNavigationItem(R.drawable.mine_fill,"我的").setInactiveIconResource(R.drawable.mine))
+                .setFirstSelectedPosition(0) //第一个选中的位置
+                .initialise();
+    }
+
+    private void initViewPager() {
+        viewPager.setOffscreenPageLimit(1);
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(new FragmentHome());
+        fragments.add(new FragmentMine());
+        viewPager.setAdapter(new ViewPagerAdapter(this, fragments));
+        viewPager.setCurrentItem(0);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                bottomNavigationBar.selectTab(position);
+            }
+        });
     }
 
 }

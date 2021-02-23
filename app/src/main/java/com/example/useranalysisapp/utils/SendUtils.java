@@ -5,7 +5,9 @@ import android.graphics.Matrix;
 import android.util.Log;
 
 import com.example.useranalysisapp.model.LoginUser;
+import com.example.useranalysisapp.model.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.FutureTask;
 
 import okhttp3.Call;
@@ -39,6 +42,7 @@ public class SendUtils {
     private static String registerUrl = IP + USER_SERVICE_PORT + "/user/addUser";
     private static String loginUrl = IP + USER_SERVICE_PORT + "/user/login";
     private static String bindUrl = IP + USER_SERVICE_PORT + "/user/bind";
+    private static String getBindingUserUrl = IP + USER_SERVICE_PORT + "/user/findBindingUser";
 
     private static String path;
 
@@ -290,4 +294,46 @@ public class SendUtils {
         });
 
     }
+
+    /*
+    public static List<User> findBindingUser(String username, ResultListener<List<User>> resultListener) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("username", username);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MediaType type = MediaType.parse("application/json;charset=utf-8");
+        RequestBody requestBody = RequestBody.create(type, obj.toString());
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                // 指定访问的服务器地址
+                .url(getBindingUserUrl).post(requestBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject result = new JSONObject(response.body().string());
+                    int httpCode = result.getInt("httpCode");
+                    if (httpCode == RESULT_SUCCESS) {
+                        JSONArray array = result.getJSONArray("data");
+                        List<User> list = 
+                        resultListener.onSuccess(result.getString("message"), );
+                    } else {
+                        resultListener.onFailure(result.getString("message"), null);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }*/
 }

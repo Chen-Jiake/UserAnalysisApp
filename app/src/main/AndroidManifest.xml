@@ -28,7 +28,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.BindingActivity"></activity>
+        <activity android:name=".activity.BindingManageActivity"></activity>
+        <activity android:name=".activity.BindingActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
